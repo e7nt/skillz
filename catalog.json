@@ -1,4 +1,3 @@
 [
-  {"name": "journal", "description": "Daily notes, standups, quick thoughts", "files": ["SKILL.md"]},
-  {"name": "commit-style", "description": "Conventional commit message format", "files": ["SKILL.md"]}
+  {"name": "conversation", "description": "Always apply when conversing with the user", "files": ["SKILL.md"]}
 ]

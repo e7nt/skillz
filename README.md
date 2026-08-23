@@ -59,17 +59,16 @@ quotes; filenames contain no spaces.
 ```
 $ skillz list
 available skills (✓ installed):
-  ·  journal        Daily notes, standups, quick thoughts
-  ·  commit-style   Conventional commit message format
+  ·  conversation     Always apply when conversing with the user
 
-$ skillz add journal
+$ skillz add conversation
   fetching SKILL.md
-installed 'journal' - syncing to agents
+installed 'conversation' - syncing to agents
 synced 1 skill(s) into 4 agent locations
 
 $ skillz list
 available skills (✓ installed):
-  ✓  journal        Daily notes, standups, quick thoughts
+  ✓  conversation     Always apply when conversing with the user
 ```
 
 ## License
