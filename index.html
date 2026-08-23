@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>skillz — one place to author skills</title>
+<style>
+  body { font-family: system-ui, sans-serif; max-width: 720px; margin: 3rem auto; padding: 0 1rem; color: #1a1a1a; line-height: 1.6; }
+  h1 { font-size: 2rem; }
+  pre { background: #f4f4f4; padding: 1rem; border-radius: 6px; overflow-x: auto; }
+  code { background: #f4f4f4; padding: 0.1em 0.3em; border-radius: 4px; }
+  table { border-collapse: collapse; width: 100%; }
+  th, td { text-align: left; padding: 0.4rem 0.6rem; border-bottom: 1px solid #ddd; }
+  ul.skills { list-style: none; padding: 0; }
+  ul.skills li { padding: 0.3rem 0; }
+</style>
+</head>
+<body>
+  <h1>skillz</h1>
+  <p>Author a skill once, use it in every coding agent: <strong>Claude Code</strong>, <strong>Codex</strong>, and <strong>omp</strong>.</p>
+
+  <h2>Install</h2>
+  <pre><code>curl -fsSL https://skillz.e7nt.com/install.sh | bash</code></pre>
+
+  <h2>Skills</h2>
+  <ul class="skills" id="skills"><li>loading…</li></ul>
+
+  <h2>Commands</h2>
+  <table>
+    <tr><th>Command</th><th>What it does</th></tr>
+    <tr><td><code>skillz list</code> (<code>ls</code>)</td><td>Show skills in the catalog. ✓ installed, · available, ~ local-only.</td></tr>
+    <tr><td><code>skillz add &lt;name&gt;</code></td><td>Install a skill from the catalog, then link it into every agent.</td></tr>
+    <tr><td><code>skillz remove &lt;name&gt;</code> (<code>rm</code>)</td><td>Uninstall a skill and unlink it from every agent.</td></tr>
+    <tr><td><code>skillz new &lt;name&gt;</code></td><td>Scaffold a local skill and link it in.</td></tr>
+    <tr><td><code>skillz sync</code></td><td>(Re)link every installed skill into all agents.</td></tr>
+    <tr><td><code>skillz update</code></td><td>Update skillz, refresh the catalog, pull latest for installed skills.</td></tr>
+    <tr><td><code>skillz help</code></td><td>Show usage.</td></tr>
+  </table>
+
+  <script>
+    fetch('catalog.json').then(r => r.json()).then(skills => {
+      const ul = document.getElementById('skills');
+      ul.innerHTML = '';
+      skills.forEach(s => {
+        const li = document.createElement('li');
+        li.innerHTML = '<code>' + s.name + '</code> — ' + s.description;
+        ul.appendChild(li);
+      });
+    }).catch(() => {
+      document.getElementById('skills').innerHTML = '<li>catalog unavailable</li>';
+    });
+  </script>
+</body>
+</html>
