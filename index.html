@@ -13,14 +13,24 @@
   th, td { text-align: left; padding: 0.4rem 0.6rem; border-bottom: 1px solid #ddd; }
   ul.skills { list-style: none; padding: 0; }
   ul.skills li { padding: 0.3rem 0; }
+  a { color: #0969da; }
+  .install { position: relative; }
+  .install pre { margin: 0; }
+  button.copy { position: absolute; top: 0.5rem; right: 0.5rem; padding: 0.25rem 0.6rem; font-size: 0.85em; background: #fff; border: 1px solid #ccc; border-radius: 6px; cursor: pointer; color: #1a1a1a; }
+  button.copy:hover { background: #f0f0f0; }
+  footer { margin-top: 2.5rem; padding-top: 1rem; border-top: 1px solid #ddd; font-size: 0.9em; color: #555; }
 </style>
 </head>
 <body>
   <h1>skillz</h1>
   <p>Author a skill once, use it in every coding agent: <strong>Claude Code</strong>, <strong>Codex</strong>, and <strong>omp</strong>.</p>
+  <p>Source: <a href="https://github.com/e7nt/skillz">github.com/e7nt/skillz</a></p>
 
   <h2>Install</h2>
-  <pre><code>curl -fsSL https://skillz.e7nt.com/install.sh | bash</code></pre>
+  <div class="install">
+    <pre><code id="install-cmd">curl -fsSL https://skillz.e7nt.com/install.sh | bash</code></pre>
+    <button id="copy-btn" type="button" class="copy">Copy</button>
+  </div>
 
   <h2>Skills</h2>
   <ul class="skills" id="skills"><li>loading…</li></ul>
@@ -49,6 +59,26 @@
     }).catch(() => {
       document.getElementById('skills').innerHTML = '<li>catalog unavailable</li>';
     });
+
+    const btn = document.getElementById('copy-btn');
+    btn.addEventListener('click', async () => {
+      const cmd = document.getElementById('install-cmd').textContent;
+      try {
+        await navigator.clipboard.writeText(cmd);
+      } catch (e) {
+        const ta = document.createElement('textarea');
+        ta.value = cmd;
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        ta.remove();
+      }
+      btn.textContent = 'Copied!';
+      setTimeout(() => { btn.textContent = 'Copy'; }, 1500);
+    });
   </script>
+  <footer>
+    <p>Open source, MIT licensed · <a href="https://github.com/e7nt/skillz">github.com/e7nt/skillz</a></p>
+  </footer>
 </body>
 </html>

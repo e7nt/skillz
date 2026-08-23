@@ -71,3 +71,7 @@ $ skillz list
 available skills (✓ installed):
   ✓  journal        Daily notes, standups, quick thoughts
 ```
+
+## License
+
+MIT — see [LICENSE](LICENSE).
