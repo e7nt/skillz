@@ -1,3 +1,4 @@
 [
-  {"name": "conversation", "description": "Always apply when conversing with the user", "files": ["SKILL.md"]}
+  {"name": "conversation", "description": "Always apply when conversing with the user", "files": ["SKILL.md"]},
+  {"name": "work-report", "description": "Use when the user asks to summarize or give work report of the changes done so far", "files": ["SKILL.md"]}
 ]
