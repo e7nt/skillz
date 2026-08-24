@@ -132,6 +132,82 @@ EOF
   cmd_sync
 }
 
+# frontmatter_value <file> <key> - print a frontmatter key value (empty if absent).
+# Only the YAML frontmatter block (between the first two `---` lines) is scanned.
+frontmatter_value() {
+  local file="$1" key="$2"
+  awk -v key="$key" '
+    NR == 1 && $0 == "---" { fm = 1; next }
+    fm && $0 == "---" { exit }
+    fm && match($0, "^[[:space:]]*" key "[[:space:]]*:") {
+      sub(/^[[:space:]]*[^:]*:[[:space:]]*/, "")
+      sub(/^"/, ""); sub(/"$/, "")
+      print
+      exit
+    }
+  ' "$file"
+}
+
+# frontmatter_flag <file> - success when the skill frontmatter sets
+# `alwaysApply: true` (or kebab-case `always-apply: true`).
+frontmatter_flag() {
+  local file="$1" v
+  v="$(frontmatter_value "$file" alwaysApply)"
+  [ "$v" = "true" ] && return 0
+  v="$(frontmatter_value "$file" always-apply)"
+  [ "$v" = "true" ] && return 0
+  return 1
+}
+
+# regen_omp_append - rebuild the skillz-managed always-apply section in omp's
+# APPEND_SYSTEM.md from installed skills that set `alwaysApply: true`.
+regen_omp_append() {
+  local omp_append="$HOME/.omp/agent/APPEND_SYSTEM.md"
+  local start_marker="<!-- skillz:managed:start -->"
+  local end_marker="<!-- skillz:managed:end -->"
+
+  local body="" name desc
+  for skill in "$SKILLS_DIR"/*/; do
+    [ -d "$skill" ] || continue
+    [ -f "$skill/SKILL.md" ] || continue
+    frontmatter_flag "$skill/SKILL.md" || continue
+    name="$(basename "$skill")"
+    desc="$(frontmatter_value "$skill/SKILL.md" description)"
+    [ -n "$body" ] && body+=$'\n'
+    body+="- \`skill://$name\`"
+    [ -n "$desc" ] && body+=" - $desc"
+  done
+
+  if [ -z "$body" ] && { [ ! -f "$omp_append" ] || ! grep -qF "$start_marker" "$omp_append"; }; then
+    return 0
+  fi
+
+  mkdir -p "$(dirname "$omp_append")"
+  local tmp
+  tmp="$(mktemp)"
+
+  # Preserve everything except any existing managed section.
+  if [ -f "$omp_append" ]; then
+    awk -v s="$start_marker" -v e="$end_marker" '
+      $0 == s { skip = 1; next }
+      skip && $0 == e { skip = 0; next }
+      skip { next }
+      { print }
+    ' "$omp_append" > "$tmp"
+  else
+    : > "$tmp"
+  fi
+
+  # Append the managed section when there are always-apply skills.
+  if [ -n "$body" ]; then
+    printf '%s\n' "$start_marker" >> "$tmp"
+    printf '%s\n' "$body" >> "$tmp"
+    printf '%s\n' "$end_marker" >> "$tmp"
+  fi
+
+  mv "$tmp" "$omp_append"
+}
+
 cmd_sync() {
   mkdir -p "$SKILLS_DIR" "${TARGETS[@]}"
   local count=0 name t link
@@ -159,6 +235,8 @@ cmd_sync() {
       esac
     done
   done
+  regen_omp_append
+
   echo "synced $count skill(s) into ${#TARGETS[@]} agent locations"
 }
 
